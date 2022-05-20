@@ -1,5 +1,5 @@
 syntax = "proto3";
-package bitcannaglobal.bcna.bcna;
+package BitCannaGlobal.bcna.bcna;
 
 option go_package = "github.com/BitCannaGlobal/bcna/x/bcna/types";
 
@@ -8,6 +8,5 @@ message Supplychain {
   string product = 2; 
   string info = 3; 
   string supplyinfo = 4; 
-  string supplyextra = 5; 
-  string creator = 6;
+  string creator = 5;
 }

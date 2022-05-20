@@ -1,5 +1,5 @@
 syntax = "proto3";
-package bitcannaglobal.bcna.bcna;
+package BitCannaGlobal.bcna.bcna;
 
 option go_package = "github.com/BitCannaGlobal/bcna/x/bcna/types";
 

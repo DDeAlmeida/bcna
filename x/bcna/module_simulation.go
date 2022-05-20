@@ -24,27 +24,27 @@ var (
 )
 
 const (
-	opWeightMsgCreateBitcannaid = "op_weight_msg_bitcannaid"
+	opWeightMsgCreateBitcannaid = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateBitcannaid int = 100
 
-	opWeightMsgUpdateBitcannaid = "op_weight_msg_bitcannaid"
+	opWeightMsgUpdateBitcannaid = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateBitcannaid int = 100
 
-	opWeightMsgDeleteBitcannaid = "op_weight_msg_bitcannaid"
+	opWeightMsgDeleteBitcannaid = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteBitcannaid int = 100
 
-	opWeightMsgCreateSupplychain = "op_weight_msg_supplychain"
+	opWeightMsgCreateSupplychain = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateSupplychain int = 100
 
-	opWeightMsgUpdateSupplychain = "op_weight_msg_supplychain"
+	opWeightMsgUpdateSupplychain = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdateSupplychain int = 100
 
-	opWeightMsgDeleteSupplychain = "op_weight_msg_supplychain"
+	opWeightMsgDeleteSupplychain = "op_weight_msg_create_chain"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteSupplychain int = 100
 
@@ -58,7 +58,6 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	bcnaGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
 		BitcannaidList: []types.Bitcannaid{
 			{
 				Id:      0,

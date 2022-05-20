@@ -13,11 +13,10 @@ func (k msgServer) CreateSupplychain(goCtx context.Context, msg *types.MsgCreate
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var supplychain = types.Supplychain{
-		Creator:     msg.Creator,
-		Product:     msg.Product,
-		Info:        msg.Info,
-		Supplyinfo:  msg.Supplyinfo,
-		Supplyextra: msg.Supplyextra,
+		Creator:    msg.Creator,
+		Product:    msg.Product,
+		Info:       msg.Info,
+		Supplyinfo: msg.Supplyinfo,
 	}
 
 	id := k.AppendSupplychain(
@@ -34,12 +33,11 @@ func (k msgServer) UpdateSupplychain(goCtx context.Context, msg *types.MsgUpdate
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var supplychain = types.Supplychain{
-		Creator:     msg.Creator,
-		Id:          msg.Id,
-		Product:     msg.Product,
-		Info:        msg.Info,
-		Supplyinfo:  msg.Supplyinfo,
-		Supplyextra: msg.Supplyextra,
+		Creator:    msg.Creator,
+		Id:         msg.Id,
+		Product:    msg.Product,
+		Info:       msg.Info,
+		Supplyinfo: msg.Supplyinfo,
 	}
 
 	// Checks that the element exists

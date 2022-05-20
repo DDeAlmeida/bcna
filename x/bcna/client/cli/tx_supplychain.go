@@ -12,21 +12,20 @@ import (
 
 func CmdCreateSupplychain() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-supplychain [product] [info] [supplyinfo] [supplyextra]",
+		Use:   "create-supplychain [product] [info] [supplyinfo]",
 		Short: "Create a new supplychain",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argProduct := args[0]
 			argInfo := args[1]
 			argSupplyinfo := args[2]
-			argSupplyextra := args[3]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCreateSupplychain(clientCtx.GetFromAddress().String(), argProduct, argInfo, argSupplyinfo, argSupplyextra)
+			msg := types.NewMsgCreateSupplychain(clientCtx.GetFromAddress().String(), argProduct, argInfo, argSupplyinfo)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -41,9 +40,9 @@ func CmdCreateSupplychain() *cobra.Command {
 
 func CmdUpdateSupplychain() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-supplychain [id] [product] [info] [supplyinfo] [supplyextra]",
+		Use:   "update-supplychain [id] [product] [info] [supplyinfo]",
 		Short: "Update a supplychain",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -56,14 +55,12 @@ func CmdUpdateSupplychain() *cobra.Command {
 
 			argSupplyinfo := args[3]
 
-			argSupplyextra := args[4]
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgUpdateSupplychain(clientCtx.GetFromAddress().String(), id, argProduct, argInfo, argSupplyinfo, argSupplyextra)
+			msg := types.NewMsgUpdateSupplychain(clientCtx.GetFromAddress().String(), id, argProduct, argInfo, argSupplyinfo)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
