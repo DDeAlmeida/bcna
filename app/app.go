@@ -136,7 +136,6 @@ var (
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
-		authzmodule.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		bank.AppModuleBasic{},
 		capability.AppModuleBasic{},
@@ -148,6 +147,7 @@ var (
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -204,7 +204,6 @@ type App struct {
 
 	// keepers
 	AccountKeeper    authkeeper.AccountKeeper
-	AuthzKeeper      authzkeeper.Keeper
 	BankKeeper       bankkeeper.Keeper
 	CapabilityKeeper *capabilitykeeper.Keeper
 	StakingKeeper    stakingkeeper.Keeper
@@ -219,7 +218,7 @@ type App struct {
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
-
+	AuthzKeeper      authzkeeper.Keeper
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
@@ -260,9 +259,9 @@ func New(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	keys := sdk.NewKVStoreKeys(
-		authtypes.StoreKey, authzkeeper.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
+		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
+		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		bcnamoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
@@ -298,11 +297,6 @@ func New(
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec, keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
 	)
-	app.AuthzKeeper = authzkeeper.NewKeeper(
-		keys[authzkeeper.StoreKey],
-		appCodec,
-		app.BaseApp.MsgServiceRouter(),
-	)
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.ModuleAccountAddrs(),
 	)
@@ -325,10 +319,13 @@ func New(
 	)
 
 	app.FeeGrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
+	
+	app.AuthzKeeper = authzkeeper.NewKeeper(
+		keys[authzkeeper.StoreKey],
+		appCodec,
+		app.BaseApp.MsgServiceRouter(),
+	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
-
-	//Update Ruderalis
-	app.RegisterUpgradeHandlers()
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -428,24 +425,24 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
-		bcnamoduletypes.ModuleName,
-		ibctransfertypes.ModuleName,
-		vestingtypes.ModuleName,
-		banktypes.ModuleName,
-		crisistypes.ModuleName,
-		genutiltypes.ModuleName,
-		govtypes.ModuleName,
-		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		capabilitytypes.ModuleName,
-		minttypes.ModuleName,
+		crisistypes.ModuleName,
+		govtypes.ModuleName,
+		stakingtypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		ibchost.ModuleName,
+		authtypes.ModuleName,
+		banktypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
+		minttypes.ModuleName,
+		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
-		stakingtypes.ModuleName,
-		ibchost.ModuleName,
 		authz.ModuleName,
-		authtypes.ModuleName,
+		feegrant.ModuleName,
+		paramstypes.ModuleName,
+		vestingtypes.ModuleName,	
+		bcnamoduletypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -503,7 +500,7 @@ func New(
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	//app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
-	// Ruderalis
+	// Buddheads1
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
@@ -553,6 +550,8 @@ func New(
 
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
+	//Update Buddheads1
+	app.RegisterUpgradeHandlers()
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -690,9 +689,31 @@ func (app *App) RegisterTendermintService(clientCtx client.Context) {
 }
 
 func (app *App) RegisterUpgradeHandlers() {
-	planName := "buddheads"
-	app.UpgradeKeeper.SetUpgradeHandler(planName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	planName := "buddheads1"
+	app.UpgradeKeeper.SetUpgradeHandler(planName, func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+		fromVM := map[string]uint64{
+			"auth":         2,
+			"bank":         2,
+			"capability":   1,
+			"crisis":       1,
+			"distribution": 2,
+			"evidence":     1,
+			"feegrant":     1,
+			"genutil":      1,
+			"gov":          2,
+			"ibc":          2,
+			"mint":         1,
+			"params":       1,
+			"slashing":     2,
+			"staking":      2,
+			"transfer":     1,
+			"upgrade":      1,
+			"vesting":      1,
+			"bcna":         1,
+		}
+		// delete new modules from the map, for _new_ modules as to not skip InitGenesis
 		delete(fromVM, authz.ModuleName)
+		ctx.Logger().Info("start to run module migrations...")
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
@@ -702,6 +723,7 @@ func (app *App) RegisterUpgradeHandlers() {
 	}
 
 	if upgradeInfo.Name == planName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		ctx.Logger().Info("adding Store types...")
 		storeUpgrades := storetypes.StoreUpgrades{
 			Added: []string{authz.ModuleName},
 		}
