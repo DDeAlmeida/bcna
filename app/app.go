@@ -689,7 +689,7 @@ func (app *App) RegisterTendermintService(clientCtx client.Context) {
 }
 
 func (app *App) RegisterUpgradeHandlers() {
-	planName := "buddheads1"
+	planName := "buddheads2"
 	app.UpgradeKeeper.SetUpgradeHandler(planName, func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		fromVM := map[string]uint64{
 			"auth":         2,
@@ -724,7 +724,7 @@ func (app *App) RegisterUpgradeHandlers() {
 
 	if upgradeInfo.Name == planName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName},
+			Added: []string{"authz"},
 		}
 
 		// Configure store loader that checks if version == upgradeHeight and applies store upgrades
