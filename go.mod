@@ -3,8 +3,8 @@ module github.com/BitCannaGlobal/bcna
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.1
-	github.com/cosmos/ibc-go/v2 v2.0.3
+	github.com/cosmos/cosmos-sdk v0.45.4
+	github.com/cosmos/ibc-go/v2 v2.2.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
@@ -13,8 +13,8 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/starport v0.19.4
-	github.com/tendermint/tendermint v0.34.15
-	github.com/tendermint/tm-db v0.6.6
+	github.com/tendermint/tendermint v0.34.19
+	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
 	google.golang.org/grpc v1.43.0
 	gopkg.in/yaml.v2 v2.4.0
