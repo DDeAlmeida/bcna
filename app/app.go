@@ -723,7 +723,6 @@ func (app *App) RegisterUpgradeHandlers() {
 	}
 
 	if upgradeInfo.Name == planName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		ctx.Logger().Info("adding Store types...")
 		storeUpgrades := storetypes.StoreUpgrades{
 			Added: []string{authz.ModuleName},
 		}
